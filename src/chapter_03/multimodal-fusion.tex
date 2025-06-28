@@ -1,0 +1,50 @@
+\subsection{Personalized Multimodal Fusion}
+\label{sec:exp-phase2-fusion}
+
+\par In the multimodal fusion stage, we selected decision-level fusion over feature-level and hybrid fusion. This choice allows each modality to output its results independently, which we can then combine without altering the internal architecture of pre-trained models. Decision-level fusion is particularly effective here, as it maintains modularity while still leveraging each modality’s unique strengths.
+
+\textbf{Decision-Level Fusion Techniques:} 
+Support Vector Regression (SVR), Adaptive Weighted Fusion Using Reinforcement Learning, Hierarchical Fusion Using Neural Networks, Dynamic Multi-Head Attention Mechanism, Fuzzy Logic Fusion, Weighted Functions.
+
+\par Due to limited user-specific data, we selected a non-machine-learning-based approach, specifically the \textbf{MSE-Based Fusion Method}. Although we initially considered fuzzy logic rules—which dynamically adjust weights,like prioritizing facial modality if facial arousal is high and vocal valence is low, we faced challenges in rule definition due to data scarcity. Instead, our framework employs Mean Squared Error (MSE) calculations to derive emotion-specific weights for each modality.
+
+\par A unique \textbf{Fusion Matrix} is generated for each user using data collected during the emotion elicitation task. This matrix includes weights for five emotion, where different modalities may be more reliable for different emotional states:
+
+\begin{lstlisting}[language=Python, caption=Emotion-specific fusion weights per user, basicstyle=\ttfamily\small, label=lst:weights]
+
+    fusion_weights = {
+        "Happy":   {"facial": W_facial, "vocal": W_vocal},
+        "Sad":     {"facial": W_facial, "vocal": W_vocal},
+        "Angry":   {"facial": W_facial, "vocal": W_vocal},
+        "Boredom": {"facial": W_facial, "vocal": W_vocal},
+        "Calm":    {"facial": W_facial, "vocal": W_vocal}
+    }
+\end{lstlisting}
+
+\par The fusion strategy is grounded in statistical theory: lower error indicates higher reliability. Thus, weights are assigned \textbf{inversely proportional to the modality's MSE} when compared to self-reported values.
+
+\textbf{Step 1: Error Calculation}
+\[
+MSE_{facial}(e) = \frac{(A_{facial} - A_{self})^2 + (V_{facial} - V_{self})^2}{2}
+\]
+\[
+MSE_{vocal}(e) = \frac{(A_{vocal} - A_{self})^2 + (V_{vocal} - V_{self})^2}{2}
+\]
+
+\textbf{Step 2: Weight Generation}
+\[
+W_{facial}(e) = \frac{1/MSE_{facial}(e)}{1/MSE_{facial}(e) + 1/MSE_{vocal}(e)}, \quad
+W_{vocal}(e) = \frac{1/MSE_{vocal}(e)}{1/MSE_{facial}(e) + 1/MSE_{vocal}(e)}
+\]
+
+\textbf{Step 3: Multimodal Fusion Output}
+\[
+A_{fused}(e) = W_{facial}(e) \times A_{facial} + W_{vocal}(e) \times A_{vocal}
+\]
+\[
+V_{fused}(e) = W_{facial}(e) \times V_{facial} + W_{vocal}(e) \times V_{vocal}
+\]
+
+\par This fusion method allows the system to dynamically adapt to each individual's emotion expression style, yielding improved recognition accuracy over single-modality and non-personalized fusion approaches.
+
+\par The results from the personalized fusion approach and individual modality approaches were evaluated and compared to understand whether the fusion process provides a significant improvement in emotion recognition accuracy and reliability. This comparison helps to justify the effectiveness of using adaptive, user-specific weighting in our framework.

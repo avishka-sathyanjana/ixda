@@ -1,0 +1,32 @@
+
+% \subsection{Eye movements}
+% \par \cite{tarnowski2020eye} explored the potential of eye-tracking data to classify emotional states using eye movements. Thirty male students were shown 21 video clips designed to evoke basic emotions happiness, sadness, anger, surprise, disgust, fear, and their eye movements were recorded using an EyeTribe eye-tracker. Features extracted included fixations, saccades, and pupil diameter, normalized via z-score. Classification models (SVM, LDA, k-NN) were applied, with SVM achieving the highest accuracy 80\% for three emotional classes. The study highlighted the significance of pupil diameter and saccade amplitude as discriminative features, emphasizing the importance of preprocessing to mitigate luminance and video dynamics effects. The study demonstrated the feasibility of using eye-tracking signals for emotion recognition, with specific patterns correlating with high arousal and valence.
+
+% \par Another research done by \cite{schurgin2014eye} nvestigated how eye movements contribute to recognizing emotions in facial expressions. Using an EyeLink 1000 eye tracker, eye movements of 51 participants were recorded as they viewed grayscale photographs depicting various emotions at different intensity levels. Analysis focused on five facial regions eyes, upper nose, lower nose, upper lip, nasion, revealing distinctive fixation patterns for different emotions. Naive Bayesian classifiers predicted emotions based on fixation sequences with up to 25\% accuracy. The study found initial fixations most diagnostic of emotions and identified significant differences in gaze patterns influenced by emotional intensity. This research underscores the role of specific facial regions and intensity levels in emotion recognition through eye movements.
+
+% \par The eSEE-d \citep{skaramagkas2023esee} study presents a comprehensive eye-tracking dataset aimed at estimating emotional states based on eye movements. Forty-eight participants watched ten emotion-evoking videos, followed by self-assessment ratings on a 0-10 scale for emotions (tenderness, anger, disgust, sadness), later mapped to arousal and valence levels. Using Pupil Labs “Pupil Core” eye-tracker, features such as fixation frequency, saccade amplitude, blink frequency, and pupil diameter were extracted and analyzed. Deep Multilayer Perceptron (DMLP) neural networks classified arousal and valence levels, achieving 92\% accuracy for positive valence and 81\% for medium vs. low arousal. The dataset, distinguished by its size and depth, demonstrated the efficacy of eye-tracking data in predicting emotional states and highlighted the potential for developing real-time emotion recognition systems. Table~\ref{tab:eye_summary} shows a summary of the above three studies.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Summary of Emotion Recognition Studies Using Eye-Tracking}
+% \begin{tabularx}{\textwidth}{|X|X|X|X|}
+% \hline
+% \textbf{Aspect} & \textbf{Eye‐Tracking Analysis for Emotion Recognition} & \textbf{Eye Movements During Emotion Recognition in Faces} & \textbf{eSEE-d: Emotional State Estimation Based on Eye-Tracking Dataset} \\
+% \hline
+% Participants & 30 male & 51 mixed & 48 mixed \\
+% \hline
+% Stimuli & 21 video clips & Grayscale photos & 10 video clips \\
+% \hline
+% Eye-Tracking Device & EyeTribe (60Hz) & EyeLink 1000 (1000Hz) & Pupil Labs “Pupil Core” (240Hz) \\
+% \hline
+% Key Features Analyzed & Fixations, Saccades, Pupil Diameter & Fixations on facial regions & Fixation freq, Saccade amp, Blink freq, Pupil diameter \\
+% \hline
+% Classification Models & SVM, LDA, k-NN & Naive Bayesian & Deep Multilayer Perceptron (DMLP) \\
+% \hline
+% Best Accuracy & 80\% (SVM) & 25\% & 92\% (positive valence) \\
+% \hline
+% Key Findings & Significant features: pupil diameter, saccade amplitude & Initial fixations most diagnostic; distinctive patterns per emotion & High accuracy for positive valence; comprehensive dataset \\
+% \hline
+% \end{tabularx}
+% \label{tab:eye_summary}
+% \end{table}

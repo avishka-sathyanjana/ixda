@@ -1,0 +1,125 @@
+\section{Facial Emotion Recognition}
+\label{sec:fer}
+\par Facial expressions occur by contracting and releasing of the muscles under the skin. Most existing applications use the movements of facial muscles considering action units and this uses supervised learning approach which is known as Facial Action Coding System (FACS) \citep{kantharia2015facial}. By using the CNN, the emotion recognition can be done in real time. This Technology is known as Facial Expression Recognition using CNN (FERC). FERC has two parts, first it removes background and noises from the source and second part entirely focuses on extracting facial features. FERC model uses Expressional Vector to identify the basic emotions, and this was able to achieve 96\% accuracy \citep{mehendale2020facial}
+
+\par in this research our interest is mostly on the continuous emotion prediction models rather than distinct emotion classification models. Study done by \cite{savchenko2024hsemotion} proposes EmotiEffNet family of models (a series of pre-trained convolutional networks) for valence-arousal prediction. These networks extract frame-level features which are fed into a Multi Layer Perceptron (MLP) and a LightAutoML classifier ensemble, with a post-processing step using smoothing to stabilize results across sequential frames. The Aff-Wild2 \citep{kollias2018aff} dataset is used in this study. Model achieved a valence CCC of 0.5603 and an arousal CCC of 0.5597 on the Aff-Wild2 dataset. This model is efficient in terms of computational requirements, reaching 45 FPS on a GPU and 12 FPS on a CPU, with a model size of 15MB, making it adaptable for mobile deployment.
+
+\par The MaxViT model \citep{wagner2024cage} utilizes a hybrid approach, combining continuous valence-arousal labels with discrete emotion categories to train a transformer-based architecture. This circumplex model-guided inference provides a more nuanced approach by learning from both types of labels, thus enhancing expression recognition accuracy. The model is trained with AffectNet \citep{mollahosseini2017affectnet} and EMOTIC \citep{kosti2019context} datasets. CAGE achieved a CCC of 0.716 for valence and 0.642 for arousal on AffectNet, with a root mean square error (RMSE) reduction of 7\% for valence and 6.4\% for arousal. This model has a larger footprint, with a size of 86MB, and processes at 30 FPS on a GPU and 8 FPS on a CPU, making it suitable for high-end applications where computational resources are available.
+
+\par Study done by \cite{savchenko2023emotieffnets} introduce EmotiEffNet model which leverages the EfficientNet-B0 architecture for frame-level feature extraction, followed by an MLP and LightAutoML classifier ensemble for downstream emotion analysis tasks. This approach is applied to predict VA, FER, and AU tasks within the video frames. Aff-Wild2 is again the primary dataset and the model achieves a valence CCC of 0.494 and an arousal CCC of 0.607. For FER, the F1 score reaches 0.433, while the AU detection F1 score is 0.486. This balance between accuracy and computational efficiency results in an inference speed of 40 FPS on GPU and 15 FPS on CPU, with a model size of 23MB, providing a suitable option for applications needing moderate computational efficiency.
+
+\begin{table}[h!]
+\centering
+\caption{Comparison of Suitable Datasets}
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Aspect} & \textbf{AffWild2} & \textbf{AffectNet} & \textbf{EMOTIC} & \textbf{Hume Facial Dataset} \\
+\hline
+\textbf{Total Frames/Images} 
+    & 2.8M frames (545 videos) 
+    & 320,739 (train) + 41,406 (val) 
+    & 23,266 (train) + 7,203 (test) 
+    & 452,783 mimic images + 534,459 judgments \\ 
+\hline
+\textbf{Annotations} 
+    & VA (-1 to +1), 8 expressions, 12 AUs 
+    & 8 expressions, VA (-1 to +1) 
+    & 26 expressions, VA, arousal, dominance 
+    & 28+ continuous emotional dimensions \\ 
+\hline
+\textbf{Resolution} 
+    & Varying (in-the-wild) 
+    & High-resolution 
+    & Context-rich, full-body 
+    & 160x160 pixels (standardized) \\ 
+\hline
+\textbf{Annotators} 
+    & Expert-labeled 
+    & 12 professionals 
+    & Multi-annotator settings 
+    & 5,833 participants (6 countries) \\ 
+\hline
+\textbf{Key Features} 
+    & Video-based dynamic expressions 
+    & Large-scale static images 
+    & Contextual full-body analysis 
+    & Cross-cultural mimicry, controls for demographic bias \\ 
+\hline
+\end{tabularx}
+\label{tab:dataset_comparison}
+\end{table}
+
+\par A comparison of suitable datasets for our study is shown in Table~\ref{tab:dataset_comparison}.
+These datasets vary in terms of labeled expressions, complexity, and real-world applicability. While AffWild2 and AffectNet focus on detailed face annotations, EMOTIC extends beyond facial analysis to include body language in contextual settings.
+
+\par Hume.ai has developed sophisticated facial expression analysis technology centered on "semantic space theory,"\citep{cowen2021semantic} which enables a high-dimensional, data-driven understanding of human emotional expressions. This approach transcends traditional models by capturing hundreds of dimensions of human expression, allowing for the identification of subtle emotional nuances. Their Facial Expression Model identifies over 28 distinct facial expressions by analyzing millions of natural facial expressions collected from a diverse global population across six countries (USA, China, India, Venezuela, Ethiopia, and South Africa), comprising over 452,783 participant-generated mimic images and 534,459 emotion judgments from 5,833 participants. This extensive cross-cultural dataset deliberately controls for demographic variables to isolate genuine emotional signals, addressing limitations of culturally homogeneous samples in previous research.\citep{brooks2024deep}
+
+\par The technology relies on a DNN model built on a FaceNet Inception ResNet v1 architecture pretrained on the VGGFace2 dataset that specifically analyzes facial features. Their FACS 2.0 Model provides an enhanced automated version of the Facial Action Coding System that measures 26 facial action units and 29 other facial features, offering detailed breakdown of facial movements that contribute to emotional expressions. The company employs principal preserved components analysis (PPCA) and generalized PPCA (G-PPCA) to extract 28 shared or culture-specific emotional dimensions from facial data. Unlike traditional models constrained to basic emotion categories, Hume.ai's system evaluates performance via correlation with human ratings of facial expressions rather than conventional metrics, ensuring alignment with real-world emotional interpretations while minimizing demographic biases\citep{brooks2024deep}.
+
+Hume.ai's expression measurement technology is particularly valuable for practical applications through its WebSocket-based streaming capabilities, which facilitate real-time data processing without burdening local machines. This API-based approach enables continuous data flow between applications and Hume's models, providing immediate feedback on facial expressions through persistent two-way communication optimized for high throughput and low latency \citep{hume_api_2025}. The system can process various media formats with reasonable size limits (images up to 3,000 x 3,000 pixels, video up to 5 seconds) and offers both REST endpoints for batch processing and WebSocket endpoints for real-time predictions from sources like webcam streams. This infrastructure makes the sophisticated facial analysis technology highly accessible for applications requiring instant processing such as live customer service tools with the computational complexity handled on Hume.ai's servers rather than client devices \citep{hume_expression_2025a}.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Comparison of Emotion Recognition Models}
+% \begin{tabularx}{\textwidth}{|X|X|X|X|}
+% \hline
+% \textbf{Aspect} & \textbf{MT-EmotiDDA MFN} & \textbf{MaxViT} & \textbf{EmotiEffNet} \\
+% \hline
+% Dataset & Aff-Wild2 & AffectNet, EMOTIC & Aff-Wild2 \\
+% \hline
+% Model Architecture & MobileNetV3 (lightweight MTL) & MaxViT (transformer-based hybrid) & EfficientNet-B0 with MLP ensemble \\
+% \hline
+% Valence CCC & 0.5603 & 0.716 & 0.494 \\
+% \hline
+% Arousal CCC & 0.5597 & 0.642 & 0.607 \\
+% \hline
+% Combined P\_VA Score & 0.5600 & Not specified & 0.550 \\
+% \hline
+% FER F1-score & 0.433 & Not specified & 0.433 \\
+% \hline
+% AU F1-score & 0.486 & Not specified & 0.486 \\
+% \hline
+% Post-processing & Gaussian/Box filters & Not specified & Box filtering for smoothing \\
+% \hline
+% Suitability & Real-time, mobile deployment & High-end applications & Moderate real-time applications \\
+% \hline
+% \end{tabularx}
+% \label{tab:model_comparison}
+% \end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Comparison of Emotion Recognition Models}
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Aspect} & \textbf{MT-EmotiDDA MFN} & \textbf{MaxViT} & \textbf{EmotiEffNet} & \textbf{Hume Facial Expression} \\
+\hline
+Dataset 
+    & Aff-Wild2 
+    & AffectNet, EMOTIC 
+    & Aff-Wild2 
+    & Hume Facial Dataset \\
+\hline
+Model Architecture 
+    & MobileNetV3 (lightweight MTL) 
+    & MaxViT (transformer-based hybrid) 
+    & EfficientNet-B0 with MLP ensemble 
+    & FaceNet Inception ResNet v1 \\
+\hline
+Post-processing 
+    & Gaussian/Box filters 
+    & Not specified 
+    & Box filtering for smoothing 
+    & MTCNN face detection, 160x160 pixel standardization  \\
+\hline
+Suitability 
+    & Real-time, mobile deployment 
+    & High-end applications 
+    & Moderate real-time applications 
+    & Cross-cultural, Real time\\
+\hline
+\end{tabularx}
+\label{tab:model_comparison}
+\end{table}
+
+The table~\ref{tab:model_comparison} provides a summarized, side-by-side comparison of each model's architecture, performance metrics, inference efficiency, and suitability for specific use cases, highlighting key findings.

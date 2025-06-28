@@ -1,0 +1,149 @@
+\section{Phase 3 - Initial Baseline Identification}
+\label{sec:initial-baseline}
+
+\par In this section, we present the methods and techniques used to identify the initial emotional baseline for each participant. We explore two primary methods: \textbf{Kernel Density Estimation (KDE)} and a simpler \textbf{Histogram-Based method}. Both methods aim to identify the region of highest density in the A-V space, which corresponds to the participant's emotional baseline. The emotional states often follow a emotion escalation cycle, beginning from a neutral or baseline state, escalating to a peak, and then returning back to baseline. This implies that the highest density region in the emotional data distribution corresponds to the user's emotional baseline.
+
+\subsection{Initial Baseline Identification Using Kernel Density Estimation (KDE)}
+
+\par After thorough research and experiments, we identified \textbf{Kernel Density Estimation (KDE)} with a Gaussian kernel as a suitable method to identify the baseline emotional region in the arousal-valence (A-V) space. 
+
+\subsubsection*{Gaussian KDE Equation and Implementation}
+
+\par The 2D Gaussian KDE function is defined as:
+
+\begin{equation}
+\hat{f}_h(x, y) = \frac{1}{n \cdot h^2 \cdot 2\pi} \sum_{i=1}^{n} \exp\left(-\frac{1}{2} \left[ \frac{(x - x_i)^2 + (y - y_i)^2}{h^2} \right] \right)
+\end{equation}
+
+\noindent where:
+\begin{itemize}
+    \item $n$ is the number of data points,
+    \item $(x_i, y_i)$ are the arousal-valence coordinates of each data point,
+    \item $h$ is the bandwidth parameter controlling the smoothness of the density estimate.
+\end{itemize}
+
+\par The KDE was implemented in Python using \texttt{scipy.stats.gaussian\_kde} as shown below:
+
+\begin{lstlisting}[language=Python, caption=Gaussian KDE implementation, basicstyle=\ttfamily\small]
+from scipy import stats
+kernel = stats.gaussian_kde([arousal, valence])
+f = np.reshape(kernel(positions), xx.shape)
+\end{lstlisting}
+
+\par The bandwidth $h$ is automatically selected using \textbf{Scott's Rule}, a well-known heuristic for KDE bandwidth estimation. For $d = 2$ dimensions (arousal and valence), it is computed as:
+
+\begin{equation}
+h = n^{-\frac{1}{d+4}} = n^{-\frac{1}{6}}
+\end{equation}
+
+\subsubsection*{Baseline Region Identification and Implementation}
+
+\par Once the density function $\hat{f}_h(x, y)$ is estimated, we identify the square region with the highest total density. We define a $0.1 \times 0.1$ square sliding over the KDE grid. For each position $(x_0, y_0)$, the integral over the region is computed as:
+
+\begin{equation}
+D(x_0, y_0) = \int_{x_0}^{x_0+0.1} \int_{y_0}^{y_0+0.1} \hat{f}_h(x, y) \, dy \, dx
+\end{equation}
+
+\par The center of the baseline region is identified by finding the square with the maximum integrated density:
+
+\begin{equation}
+(x_b, y_b) = \underset{(x_0, y_0)}{\arg\max} \; D(x_0, y_0)
+\end{equation}
+
+\par This integral is approximated numerically using grid sums. The implementation is shown below:
+
+\begin{lstlisting}[language=Python, caption=Baseline region identification with KDE, basicstyle=\ttfamily\small]
+for i in range(len(x_grid) - grid_points_in_square):
+    for j in range(len(y_grid) - grid_points_in_square):
+        square_density = np.sum(
+            f[j:j+grid_points_in_square, 
+              i:i+grid_points_in_square
+            ]
+        )
+        if square_density > max_density:
+            max_density = square_density
+            center_x = x_grid[i] + square_size / 2
+            center_y = y_grid[j] + square_size / 2
+            baseline_center = (center_x, center_y)
+\end{lstlisting}
+
+\subsubsection*{Parameter Values Used in Analysis}
+
+\begin{itemize}
+    \item \textbf{Grid Size ($g$)}: 0.01 \\
+    A smaller grid provides higher precision but requires more computation time.
+
+    \item \textbf{Square Size ($s$)}: 0.1 \\
+    Defines the size of the candidate region for emotional baseline. Assumes baseline remains stable in a small area of the A-V space.
+
+    \item \textbf{Bandwidth ($h$)}: Automatically calculated using Scott’s Rule: $h \approx n^{-1/6}$
+\end{itemize}
+
+\par This KDE-based approach provides a robust and data-driven way to estimate a participant's emotional baseline, which can then be used as a reference point for detecting deviations in real-time emotion tracking.
+
+
+% \subsection{Alternative Baseline Identification Using Histogram-Based Density Estimation}
+
+% \par In addition to the KDE-based approach, we also explored a simpler \textbf{Histogram-Based method} to identify the baseline region. This method discretizes the arousal-valence (A-V) space into bins and computes the frequency of data points falling into each bin. This technique provides an efficient and interpretable baseline estimation strategy, suitable for initial experimentation and validation.
+
+% \subsubsection*{2D Histogram and Implementation}
+
+% \par The 2D histogram computes the count of emotional data points falling into discrete bins across the A-V space. The formulation is as follows:
+
+% \begin{equation}
+% H(j, k) = \sum_{i=1}^{n} \mathbf{1}_{(a_i, v_i) \in B_{j,k}}
+% \end{equation}
+
+% \noindent where:
+% \begin{itemize}
+%     \item $H(j, k)$ is the count in bin $(j, k)$,
+%     \item $(a_i, v_i)$ are the arousal and valence values of the $i^{th}$ data point,
+%     \item $B_{j,k}$ is the region covered by bin $(j, k)$,
+%     \item $\mathbf{1}_{(a_i, v_i) \in B_{j,k}}$ is an indicator function (1 if true, 0 otherwise).
+% \end{itemize}
+
+% \par The implementation in Python is shown below:
+
+% \begin{lstlisting}[language=Python, caption=2D histogram construction, basicstyle=\ttfamily\small]
+% H, x_edges, y_edges = np.histogram2d(
+%         arousal, 
+%         valence, 
+%         bins=[y_edges, x_edges]
+%     )
+% \end{lstlisting}
+
+% \subsubsection*{ Sliding Window Density and Implementation}
+
+% \par To locate the most concentrated emotional region, a sliding window is applied over the 2D histogram to sum values within each region. The density for a window centered at $(j,k)$ is computed as:
+
+% \begin{equation}
+% D(j, k) = \sum_{j' = j - w/2}^{j + w/2} \sum_{k' = k - w/2}^{k + w/2} H(j', k')
+% \end{equation}
+
+% \par This can be efficiently implemented using a uniform filter, as shown below:
+
+% \begin{lstlisting}[language=Python, caption=Sliding window density estimation, basicstyle=\ttfamily\small]
+% from scipy.ndimage import uniform_filter
+% density = uniform_filter(H, size=window_size, mode='constant')
+% \end{lstlisting}
+
+% \subsubsection*{Peak Detection and Implementation}
+
+% \par The location of the highest density region (which we consider the baseline region) is obtained by finding the maximum value in the density map:
+
+% \begin{equation}
+% (j_{\max}, k_{\max}) = \underset{j, k}{\arg\max} \, D(j, k)
+% \end{equation}
+
+% \par The implementation is simple:
+
+% \begin{lstlisting}[language=Python, caption=Peak density location identification, basicstyle=\ttfamily\small]
+% max_idx = np.unravel_index(np.argmax(density), density.shape)
+% \end{lstlisting}
+
+\subsubsection*{Baseline Representation and Evaluation}
+
+\par For KDE method, the baseline region is represented as the center point of the region with highest density. Each baseline center was then compared with emotional values recorded during emotion eliciting tasks, where participants experienced \textit{Happy, Angry, Sad, Boredom}, and \textit{Calm} states.
+
+\par These emotional states were recorded alongside their intensity and converted into arousal-valence values using the method discussed in Subsection~\ref{sec:emotion-mapping}. This allowed a direct comparison between the estimated baseline and observed emotional states, forming the foundation for evaluating the accuracy and reliability of both KDE and histogram-based methods.
+

@@ -1,0 +1,182 @@
+\newpage
+\section*{Appendix E - Code listings}
+\label{app:code-listig}
+\subsection*{Reinforcement Learning Components}
+\label{sec:rl-code} % Add xcolor package for custom colors
+
+% Configure listings for Python syntax highlighting
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{red},
+  commentstyle=\color{green!60!black}\itshape,
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  breaklines=true,
+  tabsize=4,
+  captionpos=b,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)}
+}
+
+\begin{lstlisting}[caption={Model Parameters},label={lst:parameters}]
+# Model Parameters
+grid_size = 10              # 10x10 grid for arousal-valence plane
+num_states = grid_size * grid_size  # Total number of states (100)
+num_actions = 5             # Actions: left, right, up, down, stay
+alpha = 0.1                 # Learning rate
+gamma = 0.9                 # Discount factor
+lambda_trace = 0.9          # Eligibility trace decay rate
+epsilon = 0.3               # Initial exploration probability
+epsilon_min = 0.05          # Minimum exploration probability
+epsilon_decay = 0.999       # Exploration decay rate
+N = 100                     # Interval for direct feedback
+initial_baseline_a = 0.0    # Initial arousal baseline
+initial_baseline_v = 0.0    # Initial valence baseline
+\end{lstlisting}
+
+\begin{lstlisting}[caption={State and Coordinate Conversion},label={lst:state-conversion}]
+def state_to_index(i, j, grid_size=10):
+    """Convert grid coordinates (i, j) to a single state index."""
+    return i * grid_size + j
+
+def index_to_state(idx, grid_size=10):
+    """Convert a state index to grid coordinates (i, j)."""
+    i = idx // grid_size
+    j = idx % grid_size
+    return i, j
+
+def continuous_to_state(a, v, grid_size=10):
+    """Map continuous arousal (a) and valence (v) in [-1, 1] to a state index."""
+    step = 2 / grid_size
+    i = max(0, min(grid_size - 1, int(np.floor((a + 1) / step))))
+    j = max(0, min(grid_size - 1, int(np.floor((v + 1) / step))))
+    return state_to_index(i, j)
+
+def get_center(state, grid_size=10):
+    """Get the center coordinates (arousal, valence) of a state."""
+    i, j = index_to_state(state, grid_size)
+    step = 2 / grid_size
+    center_a = -1 + (i + 0.5) * step
+    center_v = -1 + (j + 0.5) * step
+    return center_a, center_v
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Action Selection and State Transition},label={lst:action-selection}]
+def get_action(state, Q, epsilon, num_actions=5):
+    """Select an action using epsilon-greedy policy."""
+    if np.random.rand() < epsilon:
+        return np.random.randint(num_actions)  # Explore: random action
+    return np.argmax(Q[state])  # Exploit: best action
+
+def get_next_state(state, action, grid_size=10):
+    """Determine the next state based on the current state and action."""
+    i, j = index_to_state(state, grid_size)
+    if action == 0:    # Move left
+        j = max(0, j - 1)
+    elif action == 1:  # Move right
+        j = min(grid_size - 1, j + 1)
+    elif action == 2:  # Move up
+        i = min(grid_size - 1, i + 1)
+    elif action == 3:  # Move down
+        i = max(0, i - 1)
+    # Action 4: Stay, no change
+    return state_to_index(i, j)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Reward Calculation},label={lst:reward-calculation}]
+def get_reward(current_state, D, grid_size=10):
+    """Calculate reward as negative distance to data point D, or 0 if None."""
+    if D is None:
+        return 0
+    center_a, center_v = get_center(current_state, grid_size)
+    a_d, v_d = D
+    distance = np.sqrt((center_a - a_d) ** 2 + (center_v - v_d) ** 2)
+    return -distance
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Placeholder Functions for Data Input},label={lst:data-input}]
+def get_direct_feedback(t):
+    """
+    Simulate direct feedback from the user (e.g., via emoji system).
+    Returns: tuple (arousal_b, valence_b)
+    """
+    # Placeholder: Replace with actual user input system
+    return (0.1, 0.2)  # Example feedback
+
+def has_emotional_data(t):
+    """
+    Check if emotional data is available at time t.
+    Returns: bool
+    """
+    # Placeholder: 50% chance of data availability
+    return np.random.rand() < 0.5
+
+def get_emotional_data(t):
+    """
+    Get emotional data when available (e.g., from calm states).
+    Returns: tuple (arousal_e, valence_e)
+    """
+    # Placeholder: Replace with actual data collection
+    return (0.05, 0.15)  # Example emotional data
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Q-Learning with Eligibility Traces},label={lst:q-learning}]
+def run_q_learning():
+    """Main Q-learning loop with eligibility traces."""
+    # Initialize Q-table and eligibility traces
+    Q = np.zeros((num_states, num_actions))
+    e = np.zeros((num_states, num_actions))
+    
+    # Set initial state from initial baseline
+    current_state = continuous_to_state(initial_baseline_a, initial_baseline_v)
+    
+    # Initialize epsilon for exploration
+    current_epsilon = epsilon
+    
+    # Training loop
+    num_steps = 10000  # Number of training steps
+    for t in range(num_steps):
+        # Select action using epsilon-greedy
+        action = get_action(current_state, Q, current_epsilon, num_actions)
+        
+        # Transition to next state
+        next_state = get_next_state(current_state, action, grid_size)
+        
+        # Determine data D based on time step and availability
+        D = None
+        if (t + 1) % N == 0:
+            D = get_direct_feedback(t + 1)  # Direct feedback every N steps
+        elif has_emotional_data(t + 1):
+            D = get_emotional_data(t + 1)   # Emotional data if available
+        
+        # Calculate reward
+        reward = get_reward(next_state, D, grid_size)
+        
+        # Compute temporal difference error
+        delta = reward + gamma * np.max(Q[next_state]) - Q[current_state, action]
+        
+        # Increment eligibility trace for current state-action pair
+        e[current_state, action] += 1
+        
+        # Update Q-table and decay eligibility traces for all state-action pairs
+        for s in range(num_states):
+            for a in range(num_actions):
+                Q[s, a] += alpha * delta * e[s, a]
+                e[s, a] *= gamma * lambda_trace
+        
+        # Update current state
+        current_state = next_state
+        
+        # Update exploration rate
+        current_epsilon = max(epsilon_min, current_epsilon * epsilon_decay)
+    
+    # Return final estimated baseline for evaluation
+    final_a, final_v = get_center(current_state)
+    return final_a, final_v, Q
+\end{lstlisting}

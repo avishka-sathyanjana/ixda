@@ -1,0 +1,171 @@
+\subsection{Emotion Refining Using Reinforcement Learning}
+
+Initially, RL model was trained using data gathered during the Phase 2 baseline identification stage. Data points close to the inferred baseline and those confirmed by user feedback were used as representative values for the baseline emotional state.
+
+\par\label{par:refineing-tasks} To ensure the reliability of the baseline over time, an additional data collection session was conducted one week later. During this session, each participant engaged in a 10-minute interaction involving tasks designed to elicit minimal emotional response. These tasks were chosen specifically to observe the participant’s natural, non-elicited expressions. Those tasks are:
+
+\begin{itemize}
+  \item Describing their daily routine
+  \item Counting from 1 to 20 accending and decending out loud
+  \item Listing the items they see in a random image
+  \item Request explanations of photosynthesis from LLM and reading the response
+  \item Request explanations of how ballpoint pens work from LLM and reading the response.
+\end{itemize}
+
+after end of each task, the participants were asked to rate their emotional state using the emoji feedback system.
+
+
+\subsubsection*{Why Q-Learning?}
+
+Q-learning is a model-free RL algorithm that learns which actions give the best long-term rewards. It is a good fit for this task because of the following reasons:
+
+\begin{itemize}
+    \item The baseline may move slowly over time. Q-learning can learn from experience and adjust its values to keep up with these changes.
+    \item Direct user input is not given all the time. With eligibility traces, Q-learning can still learn from delayed rewards.
+    \item The epsilon-greedy method in Q-learning helps the model to explore new emotional states, while also using what it has already learned.
+\end{itemize}
+
+\subsubsection*{Inputs to the Model}
+
+The model uses three main types of data:
+
+\begin{itemize}
+    \item \textbf{Emotional Data:} Arousal and valence values collected when the user is calm (not emotionally elevated). These are close to the real baseline.
+    \item \textbf{Direct Feedback:} Occasionally, the user gives feedback using a lightweight emoji system. These are assumed to be accurate.
+    \item \textbf{Initial Baseline:} We start with a known estimate of the user's baseline as the prior knowledge.
+\end{itemize}
+
+\subsubsection*{State and Action Spaces}
+
+\paragraph*{State Space:}
+The arousal-valence space is divided into a 10x10 grid, resulting in 100 possible states. Each state is written as $s = (i, j)$, where:
+
+\begin{itemize}
+    \item $i \in \{0, 1, \ldots, 9\}$ for arousal
+    \item $j \in \{0, 1, \ldots, 9\}$ for valence
+\end{itemize}
+
+Each cell center is calculated as:
+\[
+\text{Arousal} = -1 + (i + 0.5) \cdot 0.2, \quad \text{Valence} = -1 + (j + 0.5) \cdot 0.2
+\]
+
+The initial baseline, provided as a continuous point $(a_0, v_0)$, is mapped to the nearest grid cell using:
+\[
+i = \max(0, \min(9, \lfloor (a_0 + 1) / 0.2 \rfloor))
+\]
+\[
+j = \max(0, \min(9, \lfloor (v_0 + 1) / 0.2 \rfloor))
+\]
+
+\paragraph*{Action Space:}
+
+The agent can take one of five actions to adjust the baseline position:
+
+\begin{itemize}
+    \item Move Left: Decrease valence by one grid cell $(j \leftarrow \max(0, j-1))$
+    \item Move Right: Increase valence by one grid cell $(j \leftarrow \min(9, j+1))$
+    \item Move Up: Increase arousal by one grid cell $(i \leftarrow \min(9, i+1))$
+    \item Move Down: Decrease arousal by one grid cell $(i \leftarrow \max(0, i-1))$
+    \item Stay: Keep the current position unchanged
+\end{itemize}
+
+\subsubsection*{Reward Function}
+
+The reward function incorporates both emotional data and direct feedback, with direct feedback given higher priority due to its accuracy. At each time step $t+1$, after transitioning to state $s_{t+1}$, the reward $r_{t+1}$ is computed based on the available data $D_{t+1}$:
+
+\begin{itemize}
+    \item \textbf{Direct Feedback:} If direct feedback $b_{t+1} = (a_b, v_b)$ is available (e.g., every $N$ steps):
+    \[
+    r_{t+1} = -\text{distance}(\text{center}(s_{t+1}), b_{t+1})
+    \]
+    
+    \item \textbf{Emotional Data:} If emotional data $e_{t+1} = (a_e, v_e)$ is available:
+    \[
+    r_{t+1} = -\text{distance}(\text{center}(s_{t+1}), e_{t+1})
+    \]
+    
+    \item \textbf{No Data:} If neither is available:
+    \[
+    r_{t+1} = 0
+    \]
+\end{itemize}
+
+Where distance is calculated using Euclidean distance:
+\[
+\text{distance}(\text{center}(s), D) = \sqrt{(\text{center}(s)_a - a_d)^2 + (\text{center}(s)_v - v_d)^2}
+\]
+
+with $\text{center}(s) = (-1 + (i + 0.5) \cdot 0.2, -1 + (j + 0.5) \cdot 0.2)$ for state $s = (i, j)$, and $D = (a_d, v_d)$.
+
+\subsubsection*{Learning Algorithm}
+
+We use Q-learning with eligibility traces to handle sparse rewards effectively. The algorithm proceeds as follows:
+
+\paragraph*{1. Initialization:}
+\begin{itemize}
+    \item Q-table $Q(s, a) = 0$ for all states $s$ and actions $a$
+    \item Eligibility traces $e(s, a) = 0$ for all states $s$ and actions $a$
+    \item Initial state $s_0$ 
+    \item Parameters: $\alpha = 0.1$ (learning rate), $\gamma = 0.9$ (discount factor), $\lambda = 0.9$ (eligibility trace decay), $\epsilon = 0.3$ (initial exploration rate)
+\end{itemize}
+
+\paragraph*{2. At each time step $t$:}
+\begin{enumerate}
+    \item Observe current state $s_t$
+    
+    \item Choose action $a_t$ using epsilon-greedy policy:
+    \begin{itemize}
+        \item With probability $\epsilon$, select a random action
+        \item Otherwise, select $a_t = \arg\max_a Q(s_t, a)$
+    \end{itemize}
+    
+    \item Take action $a_t$, transition to $s_{t+1}$
+    
+    \item Receive data $D_{t+1}$:
+    \begin{itemize}
+        \item If $(t+1) \mod N = 0$, $D_{t+1} = b_{t+1}$ (direct feedback)
+        \item Else if emotional data is available, $D_{t+1} = e_{t+1}$
+        \item Else, $D_{t+1} = \text{None}$
+    \end{itemize}
+    
+    \item Compute reward $r_{t+1}$ as defined in the reward function
+    
+    \item Compute temporal difference error:
+    \[
+    \delta_t = r_{t+1} + \gamma \cdot \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t)
+    \]
+    
+    \item Update eligibility traces:
+    \[
+    e(s_t, a_t) \leftarrow e(s_t, a_t) + 1
+    \]
+    
+    \item Update Q-values for all states and actions:
+    \[
+    Q(s, a) \leftarrow Q(s, a) + \alpha \cdot \delta_t \cdot e(s, a) \quad \text{for all } s, a
+    \]
+    
+    \item Decay eligibility traces:
+    \[
+    e(s, a) \leftarrow \gamma \cdot \lambda \cdot e(s, a) \quad \text{for all } s, a
+    \]
+    
+    \item Update state: $s_t \leftarrow s_{t+1}$
+    
+    \item Decay exploration rate: $\epsilon \leftarrow \max(\epsilon_{\text{min}}, \epsilon \cdot \epsilon_{\text{decay}})$
+\end{enumerate}
+
+\paragraph*{Exploration vs Exploitation:}
+
+To balance exploring new baseline positions with leveraging learned knowledge:
+
+\begin{itemize}
+    \item Initial exploration rate: $\epsilon = 0.3$
+    \item Minimum exploration rate: $\epsilon_{\text{min}} = 0.05$
+    \item Decay rate: $\epsilon_{\text{decay}} = 0.999$
+\end{itemize}
+
+(Code listings for the RL algorithm are provided in Appendix \ref{app:code-listig}.)
+
+

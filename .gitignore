@@ -1,0 +1,14 @@
+# Ignore LaTeX auxiliary and generated files
+main.bst
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc

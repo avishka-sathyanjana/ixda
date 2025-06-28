@@ -1,0 +1,103 @@
+\section{Speech Emotion Recognition} 
+\label{sec:ser}
+\par Our study focusing on identify the arousal valence values of speech emotions. Although there are many categorical datasets in SER, Only few has data with arousal, valence labeled and also in English language. Table~\ref{tab:ser_datasets} shows a detailed comparison on available SER datasets.
+
+% \begin{table}[h!]
+% \centering
+% \begin{tabularx}{\textwidth}{|X|X|X|X|}
+% \hline
+% \textbf{Dataset} & \textbf{Year} & \textbf{Content} & \textbf{Emotions} \\
+% \hline
+% RAVDESS & 2018 & 7,356 recordings by 24 actors & 7 emotions: calm, happy, sad, angry, fearful, surprise, disgust \\
+% \hline
+% MuSe-CAR & 2021 & 40 hours, 6,000+ recordings of 25,000+ sentences by 70+ speakers & Continuous dimensions: valence, arousal, trustworthiness \\
+% \hline
+% Morgan Emotional Speech Set & 2019 & 999 spontaneous voice messages from 100 speakers & Valence , arousal, 4 emotions: happiness, anger, sadness, calm \\
+% \hline
+% OMG Emotion & 2018 & 420 videos, avg. length 1 min & 7 emotions: anger, disgust, fear, happy, sad, surprise, neutral; plus valence, arousal \\
+% \hline
+% IEMOCAP & 2007 & 12 hours, 5 sessions, 10 actors & Neutral, happiness, sadness, anger, surprise, fear, disgust, frustration, excited; Balanced: happiness, anger, sadness, frustration, neutral; 3 dimensions: valence, arousal, dominance \\
+% \hline
+% \end{tabularx}
+% \caption{Comparison of Speech Emotion Recognition Datasets}
+% \end{table}
+ 
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|X|X|X|X|}
+\hline
+\textbf{Dataset} & \textbf{Year} & \textbf{Content} & \textbf{Emotions} \\
+\hline
+RAVDESS 
+    & 2018 
+    & 7,356 recordings by 24 actors 
+    & 7 emotions: calm, happy, sad, angry, fearful, surprise, disgust \\
+\hline
+MuSe-CAR 
+    & 2021 
+    & 40 hours, 6,000+ recordings of 25,000+ sentences by 70+ speakers 
+    & Continuous dimensions: valence, arousal, trustworthiness \\
+\hline
+Morgan Emotional Speech Set 
+    & 2019 
+    & 999 spontaneous voice messages from 100 speakers 
+    & Valence, arousal, 4 emotions: happiness, anger, sadness, calm \\
+\hline
+OMG Emotion 
+    & 2018 
+    & 420 videos, avg. length 1 min 
+    & 7 emotions categories; valence, arousal \\
+\hline
+IEMOCAP 
+    & 2007 
+    & 12 hours, 5 sessions, 10 actors 
+    & 15 emotion categories; valence, arousal and dominance \\
+\hline
+HUME-VB 
+    & 2023 
+    & 282,906 vocalizations from 4,080 participants across 5 countries 
+    & 48 emotion categories and 24 emotional dimensions \\
+\hline
+HUME-Prosody 
+    & 2023 
+    & 5,000+ "seed" samples and 282,906 trials of crowd-sourced mimicry responses across English, Mandarin, Spanish, Hindi 
+    & 48 emotion categories with continuous  values \\
+\hline
+\end{tabularx}
+\caption{Comparison of Speech Emotion Recognition Datasets}
+\label{tab:ser_datasets}
+\end{table}
+
+\par The study \cite{zhang2017speech} utilizes the IEMOCAP dataset with CNNs for emotion recognition, extracting MFCCs, pitch, and prosodic features. The model achieved better performance on high-arousal emotions like anger and happiness but had challenges with neutral, low-arousal states. CNNs effectively captured emotional features relevant to both arousal and valence dimensions, highlighting the importance of carefully selected acoustic features in SER.
+
+\par Another study done by \cite{martinez2020msp} Leveraging the MSP-Podcast corpus with time-continuous annotations, this study applied RNNs, particularly LSTMs, to capture sequential dependencies in speech emotions. By modeling continuous changes in emotions, the model achieved high correlation scores in arousal and valence prediction, making it well-suited for applications where emotions evolve over time.
+
+\par Using the RAVDESS dataset, the study \cite{jalal2019spatio} explored LSTMs to enhance emotion detection, especially for low-arousal states. Focusing on features like pitch, energy, and spectral elements, the LSTM-based model demonstrated effectiveness in classifying nuanced emotions, achieving significant accuracy gains on emotions with subtle arousal shifts. The study supports the use of LSTMs in capturing temporal patterns, particularly for more subtle, low-arousal emotions.
+
+\par This recent study \cite{wagner2023dawn} applied transformer architectures like wav2vec 2.0 and HuBERT, pre-trained on large audio datasets, for SER across MSP-Podcast, IEMOCAP, and MOSI. Transformers achieved state-of-the-art performance in valence recognition, with results revealing robust performance across diverse conditions and fairness in gender representation. The study showed that fine-tuning transformers with continuous annotations allows them to implicitly capture linguistic cues, which significantly improves valence prediction. 
+
+\par Hume.ai's Vocal Burst dataset (HUME-VB) represents a groundbreaking resource for emotion recognition research, comprising 282,906 vocalizations from 4,080 participants across five culturally diverse countries (USA, China, India, Venezuela, South Africa) spanning multiple languages (English, Mandarin, Spanish, Hindi). This extensive dataset captures emotional expressions in real-world conditions with varied recording environments, making it the largest of its kind. The dataset has been leveraged in two significant ways: first, done by \cite{brooks2023vocalburst_deep} to train DNNs that predict 48 emotion categories from vocal bursts, revealing that nonverbal vocalizations express 24 distinct emotional dimensions with 79\% cross-cultural consistency, supporting Semantic Space Theory which conceptualizes emotions as continuous multi-dimensional states rather than discrete categories. Second done by \cite{tzirakis2023large_vocalburst}, used the dataset to develop transformer-based models, particularly Whisper architectures for detecting and classifying 67 vocalization types in audio streams, with the best-performing models achieving F1-scores of 96.2\% even in challenging noisy environments. These studies demonstrate the HUME-VB dataset's value in advancing understanding of cross-cultural emotional communication while providing practical applications for affective computing technology.
+
+\par Hume.ai's Speech Prosody dataset (Hume-Prosody Corpus, HP-C) represents another significant contribution to emotional expression research, containing over 5,000 "seed" samples of emotional vocalizations and 282,906 trials of crowd-sourced mimicry responses collected across multiple languages (English, Mandarin, Spanish, Hindi) and cultures (USA, China, India, Venezuela, South Africa). This dataset was prominently featured in the 2023 Computational Paralinguistics Challenge (ComParE), where researchers tackled the "Emotion Share" task of predicting continuous emotion proportions across 48 emotion categories in speech segments \cite{schuller2023acm}. The challenge evaluated models using Spearman's rank correlation metrics, with baseline approaches including both modern transformer-based systems (Wav2Vec2) and traditional acoustic feature engineering (OpenSMILE). Research findings revealed that models struggled particularly with low-prevalence emotions, highlighting the need for balanced datasets, while also demonstrating significant cross-cultural variability in emotion expression. This work established important benchmarks for emotion share prediction while suggesting that future advances could come from combining acoustic and linguistic features, extending the dataset's utility for developing robust speech-based affective computing systems.
+
+% Comparison of above studies is shown in table~\ref{tab:eye_summary}
+
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|X|X|X|X|X|}
+\hline
+\textbf{Study} & \textbf{Dataset} & \textbf{Methodology} & \textbf{Key Results} & \textbf{Performance} \\
+\hline
+CNN on IEMOCAP & IEMOCAP & CNN, MFCC, pitch, prosodic & High accuracy on high-arousal & ~82\% for anger/happiness, ~65\% for neutral \\
+\hline
+RNN on MSP-Podcast & MSP-Podcast & RNN, LSTM, time-continuous annotation & Continuous tracking of emotions & Correlation: 0.403 (arousal), 0.196 (valence) \\
+\hline
+LSTM on RAVDESS & RAVDESS & LSTM, pitch, energy, spectral features & Low-arousal detection improved & 75\% accuracy for primary emotions, 68\% for low-arousal \\
+\hline
+Transformer-based Models on MSP-Podcast & MSP-Podcast, IEMOCAP, MOSI & Transformer (wav2vec 2.0, HuBERT) & Robust valence recognition, state-of-the-art on valence & CCC of 0.638 on MSP-Podcast for valence \\
+\hline
+\end{tabularx}
+\caption{Comparison of Speech Emotion Recognition Studies}
+\end{table}
+
+\par In summary, emotion recognition research has evolved from foundational psychological theories like Plutchik’s wheel and the VAD model to sophisticated multimodal systems that analyze facial, vocal, and textual cues. Modern FER models such as EmotiEffNet and MaxViT demonstrate strong performance in valence-arousal prediction, balancing accuracy with computational efficiency. Hume.ai’s approach offers a culturally diverse and highly detailed understanding of emotional expression. Similarly, SER leverages CNNs, LSTMs, and transformers to model emotional variations in audio, with recent advances achieving state-of-the-art results using large, diverse datasets. Together, these developments underscore the importance of multimodal, culturally-aware, and continuously annotated datasets for advancing emotion recognition technologies.

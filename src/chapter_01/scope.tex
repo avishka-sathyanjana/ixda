@@ -1,0 +1,29 @@
+\section{Scope}
+\subsection{In Scope}
+\begin{enumerate}
+    \item Use existing pre-trained models for multimodal emotion recognition
+        \begin{itemize}
+            \item Our key contribution lies in effectively combining facial and audio emotion recognition modalities. By fusing data from facial and audio inputs, we can cross-validate and enhance overall emotion detection accuracy.
+        \end{itemize}
+    \item Develop personalized, adaptive emotional baselines model
+        \begin{itemize}
+            \item Many emotion recognition systems use universal, static baselines, leading to inaccuracies as individual behaviors change over time. Our innovative approach is to establish and continuously update personalized baselines for each user.
+        \end{itemize}
+    \item Develop an application that captures data to recognize the user's emotional state and facilitates interaction with large language models.
+        \begin{itemize}
+            \item This application will use prompt engineering to combine the user's emotional state with their query, enhancing the relevance and personalization of the responses from the LLM.
+        \end{itemize}
+\end{enumerate}
+
+\subsection{Delimitations}
+\begin{enumerate}
+    \item Develop new facial and audio emotion modals from scratch
+        \begin{itemize}
+            \item Given the abundance of highly accurate, well-established models in each domain, reimplementing these is unnecessary. Our focus is on multimodal integration and personalization, not on improving individual modalities.
+        \end{itemize}
+    \item Modify core AI models (GPT architecture)
+        \begin{itemize}
+            \item Our scope is to enhance LLM responses by providing emotional context, not to alter the fundamental architecture of LLMs.
+        \end{itemize}
+    \item Making a dataset suited to the cultural context of Sri Lankans.
+\end{enumerate}

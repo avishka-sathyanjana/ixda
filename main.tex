@@ -1,0 +1,114 @@
+\documentclass[10pt,a4paper]{article}
+
+% PACKAGES
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,paperwidth=170mm,paperheight=240mm]{geometry} % Approximates 122mm x 193mm text area
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{natbib}
+\usepackage{imakeidx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage[acronym]{glossaries}
+\usepackage{lipsum} % DUMMY TEXT
+\usepackage[english]{babel} % Assuming English
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage{longtable}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{makecell}
+
+% CONFIGS
+\pagestyle{plain}
+\fancyfoot[C]{\thepage}
+\hypersetup{
+    pdfauthor = {Avishka Sathyanjana},
+    pdftitle = {Multimodal Emotional State Recognition for Personalized Responses},
+    colorlinks,
+    linkcolor={black},
+    citecolor={black}
+}
+\PassOptionsToPackage{unicode}{hyperref}
+
+% MACROS
+\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}  % Makes writing units simpler
+\renewcommand{\thefootnote}{\emph{\alph{footnote}}} % Italic letters for footnotes
+
+% PATHS
+\graphicspath{ {img/} }
+
+% BIB SETUP
+\bibliographystyle{plainnat} % Numerical citation style
+
+% TITLE FORMAT
+\title{\textbf{\fontsize{14}{16}\selectfont Multimodal Emotional State Recognition for Personalized Responses}}
+\author{
+    \fontsize{10}{12}\selectfont Avishka Sathyanjana \\
+    \fontsize{9}{11}\selectfont University of Moratuwa, Sri Lanka \\
+    \fontsize{9}{11}\selectfont avishka.sathyanjana@example.com
+}
+
+% HEADINGS FORMAT
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+
+% DOCUMENT BEGIN HERE
+\begin{document}
+
+% TITLE AND AUTHOR
+\maketitle
+
+% ABSTRACT
+\begin{abstract}
+    \fontsize{9}{11}\selectfont
+    This paper explores multimodal emotional state recognition to enable personalized responses in human-computer interaction. By integrating data from facial expressions, voice tone, and physiological signals, we propose a machine learning framework to accurately detect emotional states. The study evaluates the system's performance across diverse datasets, achieving promising results in real-time applications. % Adjust to 70-150 words
+\end{abstract}
+
+% KEYWORDS
+\textbf{Keywords:} Emotional State Recognition, Multimodal Analysis, Personalized Responses, Machine Learning, Human-Computer Interaction
+
+% INTRODUCTION
+\section{Introduction}
+\input{src/chapter_01/index.tex}
+
+% LITERATURE REVIEW
+\section{Literature Review}
+\input{src/chapter_02/index.tex}
+
+% DESIGN AND IMPLEMENTATION
+\section{Design and Implementation}
+\input{src/chapter_03/index.tex}
+
+% RESULTS AND EVALUATION
+\section{Results and Evaluation}
+\input{src/chapter_04/index.tex}
+
+% CONCLUSION
+\section{Conclusion}
+\input{src/chapter_05/index.tex}
+
+% ACKNOWLEDGMENTS
+\section*{Acknowledgments}
+The authors would like to thank the University of Moratuwa for their support.
+
+% CRediT AUTHOR STATEMENT
+\section*{CRediT author statement}
+Avishka Sathyanjana: Conceptualization, Methodology, Formal analysis, Writing – original draft preparation.
+
+% REFERENCES
+\newpage
+\bibliography{refernce/references}
+
+\end{document}
