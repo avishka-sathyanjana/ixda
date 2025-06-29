@@ -73,14 +73,13 @@
 % ABSTRACT
 \begin{abstract}
     \fontsize{9}{11}\selectfont
-    This paper explores multimodal emotional state recognition to enable personalized responses in human-computer interaction. By integrating data from facial expressions, voice tone, and physiological signals, we propose a machine learning framework to accurately detect emotional states. The study evaluates the system's performance across diverse datasets, achieving promising results in real-time applications. % Adjust to 70-150 words
+  This study presents a personalized multimodal emotion recognition framework that adapts to individual emotional baselines using facial and vocal signals. Decision Level Fusion with Mean Squared Error assigns personalized weights based on user-reported emotions. Kernel Density Estimation establishes an initial arousal-valence baseline, refined via reinforcement learning with emoji-based feedback. Experiments with 10 participants across five emotions (Happy, Angry, Sad, Boredom, Calm) show the fused method improves accuracy by 33.92\% over facial and 6.52\% over vocal methods. Personalized responses enhanced empathy (75.3\%), emotional alignment (69.5\%), and satisfaction (37.6\%). Most participants (66.67\%) validated the refined baseline. Contributions include a personalized fusion method, baseline identification, and iterative refinement. Future work will expand emotional categories, incorporate physiological data, and enhance context-aware fusion. This framework advances personalized human-computer interaction.
 \end{abstract}
 
 % KEYWORDS
-\textbf{Keywords:} Emotional State Recognition, Multimodal Analysis, Personalized Responses, Machine Learning, Human-Computer Interaction
+\textbf{Keywords:} Affective Computing, Emotional State Recognition, Multimodal Analysis, Personalized Responses, Machine Learning, Human-Computer Interaction, Reinforcement Learning, Arousal-Valence, 
 
 % INTRODUCTION
-\section{Introduction}
 \input{src/chapter_01/index.tex}
 
 % LITERATURE REVIEW
